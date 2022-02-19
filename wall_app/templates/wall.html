@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CodingDojo Wall</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <div class="row align-items-center mx-2 border-bottom border-dark border-3">
+      <div class="col mt-2">
+        <h2>CodingDojo Wall</h2>
+      </div>
+      <div class="col-4">
+        <div class="row align-items-center">
+          <div class="col-8">
+            <h4>Welcome, {{first_name}}</h4>
+          </div>
+          <div class="col text-end me-2">
+            <a href="/logout">Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-5">
+      <div class="col-10 offset-1">
+        <form
+          action="/dojo_wall/post_message/{{request.session.userid}}"
+          method="post"
+        >
+          {%csrf_token%}
+          <label for="message">Post a message</label>
+          <textarea
+            class="form-control"
+            name="message"
+            id="message"
+            rows="3"
+          ></textarea>
+          <button class="btn btn-primary float-end mt-3">Post a message</button>
+        </form>
+      </div>
+    </div>
+    {%for message in messages%}
+    <div class="row mt-5">
+      <div class="row">
+        <div class="col-4 offset-1">
+          <p>
+            <b
+              >{{message.user.first_name}} {{message.user.last_name}} -
+              {{message.created_at}}</b
+            >
+          </p>
+          <p class="ms-3">{{message.message}}</p>
+        </div>
+        {%if message.user.id == request.session.userid%}
+        <div class="col-2 offset-1">
+          <a
+            href="/dojo_wall/delete_message/{{message.id}}"
+            class="btn btn-danger"
+            >Delete Message</a
+          >
+        </div>
+        {%endif%}
+      </div>
+      {%for comment in message.comments.all%}
+      <div class="row">
+        <div class="col-8 offset-1 ps-5">
+          <p>
+            <b
+              >{{comment.user.first_name}} {{comment.user.last_name}} -
+              {{comment.created_at}}</b
+            >
+          </p>
+          <p>{{comment.comment}}</p>
+        </div>
+      </div>
+      {%endfor%}
+      <div class="row">
+        <div class="col-10 offset-1 ps-5">
+          <form
+            action="/dojo_wall/post_comment/{{message.id}}/{{request.session.userid}}"
+            method="post"
+          >
+            {%csrf_token%}
+            <label for="comment">Post a comment</label>
+            <textarea
+              class="form-control"
+              name="comment"
+              id="comment"
+              rows="3"
+            ></textarea>
+            <button class="btn btn-success float-end mt-3">
+              Post a comment
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {%endfor%}
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
